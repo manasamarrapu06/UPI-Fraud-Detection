@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Transaction Check - SecurePay AI</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px 7%;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 45px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        input[readonly] {
+            background: #eef2f7;
+            cursor: not-allowed;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #162d6b;
+        }
+
+        #result {
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .safe {
+            background: #e8f7ed;
+            border: 1px solid #a7dfb5;
+            color: #176b2c;
+        }
+
+        .suspicious {
+            background: #fdeaea;
+            border: 1px solid #f0aaaa;
+            color: #a40000;
+        }
+
+        .error {
+            background: #fff3cd;
+            border: 1px solid #ffe08a;
+            color: #856404;
+        }
+
+        .result-title {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            gap: 15px;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .label-text {
+            font-weight: bold;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #1e3a8a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+    <h1>SecurePay AI</h1>
+
+    <p>
+        Real-Time UPI Fraud Detection System
+    </p>
+
+</div>
+
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>🤖 AI Transaction Analysis</h2>
+
+
+        <form id="transactionForm">
+
+            <!-- Logged-in User -->
+
+            <label for="sender">
+                Sender Name
+            </label>
+
+            <input
+                    type="text"
+                    id="sender"
+                    readonly
+            >
+
+
+            <!-- Receiver -->
+
+            <label for="receiver">
+                Receiver Name
+            </label>
+
+            <input
+                    type="text"
+                    id="receiver"
+                    placeholder="Enter receiver name"
+                    required
+            >
+
+
+            <!-- Amount -->
+
+            <label for="amount">
+                Transaction Amount (₹)
+            </label>
+
+            <input
+                    type="number"
+                    id="amount"
+                    placeholder="Enter amount"
+                    min="1"
+                    step="0.01"
+                    required
+            >
+
+
+            <!-- Location -->
+
+            <label for="location">
+                Transaction Location
+            </label>
+
+            <input
+                    type="text"
+                    id="location"
+                    placeholder="Enter transaction location"
+                    required
+            >
+
+
+            <button type="submit">
+                🔍 Analyze Transaction
+            </button>
+
+        </form>
+
+
+        <div id="result"></div>
+
+
+        <a href="user-dashboard.html" class="back">
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ==========================================
+    // USER SESSION
+    // ==========================================
+
+    const userRole =
+        sessionStorage.getItem("userRole");
+
+    const userName =
+        sessionStorage.getItem("userName");
+
+
+    // ==========================================
+    // ACCESS PROTECTION
+    // ==========================================
+
+    if (userRole !== "USER") {
+
+        alert(
+            "Access denied. Please login as a USER."
+        );
+
+        window.location.href =
+            "login.html";
+    }
+
+
+    // ==========================================
+    // SET LOGGED-IN USER AS SENDER
+    // ==========================================
+
+    const senderInput =
+        document.getElementById("sender");
+
+    if (userName) {
+
+        senderInput.value = userName;
+
+    } else {
+
+        alert(
+            "User session not found. Please login again."
+        );
+
+        window.location.href =
+            "login.html";
+    }
+
+
+    // ==========================================
+    // TRANSACTION FORM
+    // ==========================================
+
+    document
+        .getElementById("transactionForm")
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                const sender =
+                    document
+                        .getElementById("sender")
+                        .value
+                        .trim();
+
+
+                const receiver =
+                    document
+                        .getElementById("receiver")
+                        .value
+                        .trim();
+
+
+                const amount =
+                    parseFloat(
+                        document
+                            .getElementById("amount")
+                            .value
+                    );
+
+
+                const location =
+                    document
+                        .getElementById("location")
+                        .value
+                        .trim();
+
+
+                const result =
+                    document.getElementById(
+                        "result"
+                    );
+
+
+                // ==================================
+                // BASIC FRONTEND VALIDATION
+                // ==================================
+
+                if (!sender) {
+
+                    alert(
+                        "User session not found."
+                    );
+
+                    return;
+                }
+
+
+                if (!receiver) {
+
+                    alert(
+                        "Please enter receiver name."
+                    );
+
+                    return;
+                }
+
+
+                if (!amount || amount <= 0) {
+
+                    alert(
+                        "Amount must be greater than 0."
+                    );
+
+                    return;
+                }
+
+
+                if (!location) {
+
+                    alert(
+                        "Please enter transaction location."
+                    );
+
+                    return;
+                }
+
+
+                // ==================================
+                // SHOW ANALYZING MESSAGE
+                // ==================================
+
+                result.style.display =
+                    "block";
+
+                result.className = "";
+
+                result.innerHTML =
+                    "<div class='result-title'>" +
+                    "⏳ Analyzing Transaction..." +
+                    "</div>";
+
+
+                // ==================================
+                // SEND TO SPRING BOOT
+                // ==================================
+
+                fetch(
+                    "/api/transactions",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            sender: sender,
+
+                            receiver: receiver,
+
+                            amount: amount,
+
+                            location: location
+
+                        })
+
+                    }
+                )
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        return response
+                            .json()
+                            .catch(() => null)
+                            .then(errorData => {
+
+                                const message =
+                                    errorData &&
+                                    errorData.message
+                                        ? errorData.message
+                                        : "Transaction analysis failed";
+
+                                throw new Error(
+                                    message
+                                );
+
+                            });
+
+                    }
+
+                    return response.json();
+
+                })
+
+
+                // ==================================
+                // DISPLAY RESULT
+                // ==================================
+
+                .then(transaction => {
+
+                    const status =
+                        transaction.status;
+
+
+                    const riskScore =
+                        transaction.riskScore ?? 0;
+
+
+                    const riskLevel =
+                        transaction.riskLevel ??
+                        "UNKNOWN";
+
+
+                    const fraudReason =
+                        transaction.fraudReason ||
+                        "No suspicious activity detected.";
+
+
+                    // ==============================
+                    // SAFE
+                    // ==============================
+
+                    if (status === "SAFE") {
+
+                        result.className =
+                            "safe";
+
+                        result.innerHTML =
+
+                            "<div class='result-title'>" +
+                            "✅ TRANSACTION IS SAFE" +
+                            "</div>" +
+
+                            "<div class='result-row'>" +
+                            "<span class='label-text'>AI Prediction</span>" +
+                            "<span>SAFE</span>" +
+                            "</div>" +
+
+                            "<div class='result-row'>" +
+                            "<span class='label-text'>Risk Score</span>" +
+                            "<span>" +
+                            riskScore +
+                            "%</span>" +
+                            "</div>" +
+
+                            "<div class='result-row'>" +
+                            "<span class='label-text'>Risk Level</span>" +
+                            "<span>" +
+                            riskLevel +
+                            "</span>" +
+                            "</div>" +
+
+                            "<div class='result-row'>" +
+                            "<span class='label-text'>Message</span>" +
+                            "<span>" +
+                            fraudReason +
+                            "</span>" +
+                            "</div>";
+
+                    }
+
+
+                    // ==============================
+                    // SUSPICIOUS
+                    // ==============================
+
+                    else {
+
+                        result.className =
+                            "suspicious";
+
+                        result.innerHTML =
+
+                            "<div class='result-title'>" +
+                            "🚨 SUSPICIOUS TRANSACTION" +
+                            "</div>" +
+
+                            "<div class='result-row'>" +
+                            "<span class='label-text'>AI Prediction</span>" +
+                            "<span>FRAUD</span>" +
+                            "</div>" +
+
+                            "<div class='result-row'>" +
+                            "<span class='label-text'>Risk Score</span>" +
+                            "<span>" +
+                            riskScore +
+                            "%</span>" +
+                            "</div>" +
+
+                            "<div class='result-row'>" +
+                            "<span class='label-text'>Risk Level</span>" +
+                            "<span>" +
+                            riskLevel +
+                            "</span>" +
+                            "</div>" +
+
+                            "<div class='result-row'>" +
+                            "<span class='label-text'>Fraud Reason</span>" +
+                            "<span>" +
+                            fraudReason +
+                            "</span>" +
+                            "</div>";
+
+                    }
+
+                })
+
+
+                // ==================================
+                // ERROR
+                // ==================================
+
+                .catch(error => {
+
+                    console.error(error);
+
+                    result.className =
+                        "error";
+
+                    result.style.display =
+                        "block";
+
+                    result.innerHTML =
+
+                        "<div class='result-title'>" +
+                        "⚠️ Unable to analyze transaction" +
+                        "</div>" +
+
+                        "<p>" +
+                        error.message +
+                        "</p>";
+
+                });
+
+            });
+
+</script>
+
+</body>
+
+</html>

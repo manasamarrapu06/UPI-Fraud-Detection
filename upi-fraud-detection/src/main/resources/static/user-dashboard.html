@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>User Dashboard - SecurePay AI</title>
+
+    <style>
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f7fb;
+
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+
+            background: #1e3a8a;
+
+            color: white;
+
+            padding: 20px 7%;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+        .header h1 {
+
+            margin: 0;
+
+            font-size: 24px;
+
+        }
+
+        .logout {
+
+            background: white;
+
+            color: #1e3a8a;
+
+            padding: 9px 18px;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+        }
+
+        .logout:hover {
+
+            background: #e5e7eb;
+
+        }
+
+        /* ================= WELCOME ================= */
+
+        .welcome {
+
+            width: 90%;
+
+            max-width: 1100px;
+
+            margin: 30px auto 20px;
+
+        }
+
+        .welcome h2 {
+
+            color: #1e3a8a;
+
+        }
+
+        /* ================= CARDS ================= */
+
+        .cards {
+
+            width: 90%;
+
+            max-width: 1100px;
+
+            margin: auto;
+
+            display: flex;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+
+        }
+
+        .card {
+
+            flex: 1;
+
+            min-width: 220px;
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+            text-align: center;
+
+        }
+
+        .card h3 {
+
+            color: #1e3a8a;
+
+        }
+
+        .card p {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+        }
+
+        /* ================= ACTIONS ================= */
+
+        .actions {
+
+            width: 90%;
+
+            max-width: 1100px;
+
+            margin: 30px auto;
+
+            display: flex;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+
+        }
+
+        .action {
+
+            flex: 1;
+
+            min-width: 220px;
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+            text-align: center;
+
+        }
+
+        .action h2 {
+
+            margin-top: 0;
+
+        }
+
+        .action a {
+
+            display: inline-block;
+
+            margin-top: 15px;
+
+            padding: 12px 20px;
+
+            background: #1e3a8a;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 6px;
+
+        }
+
+        .action a:hover {
+
+            background: #162f70;
+
+        }
+
+        /* ================= SECTIONS ================= */
+
+        .history {
+
+            width: 90%;
+
+            max-width: 1100px;
+
+            margin: 30px auto;
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+            box-sizing: border-box;
+
+        }
+
+        .history h2 {
+
+            color: #1e3a8a;
+
+        }
+
+        .history p {
+
+            margin-bottom: 20px;
+
+        }
+
+        /* ================= TABLE ================= */
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 15px;
+
+            table-layout: fixed;
+
+        }
+
+        th,
+        td {
+
+            padding: 10px 6px;
+
+            border: 1px solid #ddd;
+
+            text-align: center;
+
+            word-wrap: break-word;
+
+            overflow-wrap: break-word;
+
+        }
+
+        th {
+
+            background: #1e3a8a;
+
+            color: white;
+
+        }
+
+        th:nth-child(1),
+        td:nth-child(1) {
+
+            width: 6%;
+
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+
+            width: 13%;
+
+        }
+
+        th:nth-child(3),
+        td:nth-child(3) {
+
+            width: 13%;
+
+        }
+
+        th:nth-child(4),
+        td:nth-child(4) {
+
+            width: 12%;
+
+        }
+
+        th:nth-child(5),
+        td:nth-child(5) {
+
+            width: 14%;
+
+        }
+
+        th:nth-child(6),
+        td:nth-child(6) {
+
+            width: 14%;
+
+        }
+
+        th:nth-child(7),
+        td:nth-child(7) {
+
+            width: 28%;
+
+        }
+
+        /* ================= STATUS ================= */
+
+        .safe {
+
+            color: green;
+
+            font-weight: bold;
+
+        }
+
+        .suspicious {
+
+            color: red;
+
+            font-weight: bold;
+
+        }
+
+        /* ================= FRAUD ALERT ================= */
+
+        #fraudAlerts {
+
+            display: none;
+
+        }
+
+        .alert-title {
+
+            color: #dc2626 !important;
+
+        }
+
+        .no-alert {
+
+            text-align: center;
+
+            padding: 20px;
+
+            font-weight: bold;
+
+            color: green;
+
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 700px) {
+
+            .header {
+
+                flex-direction: column;
+
+                gap: 15px;
+
+            }
+
+            .cards,
+            .actions {
+
+                flex-direction: column;
+
+            }
+
+            .history {
+
+                width: 90%;
+
+                overflow-x: hidden;
+
+            }
+
+            table {
+
+                width: 100%;
+
+                min-width: 0;
+
+                table-layout: fixed;
+
+                font-size: 10px;
+
+            }
+
+            th,
+            td {
+
+                padding: 8px 3px;
+
+                word-break: break-word;
+
+                overflow-wrap: break-word;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================================================= -->
+<!-- HEADER -->
+<!-- ================================================= -->
+
+<div class="header">
+
+    <h1>SecurePay AI</h1>
+
+    <a href="login.html"
+       class="logout"
+       onclick="logout()">
+
+        Logout
+
+    </a>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- WELCOME -->
+<!-- ================================================= -->
+
+<div class="welcome">
+
+    <h2>
+        Welcome, <span id="userName">User</span> 👋
+    </h2>
+
+    <p>
+        Monitor your digital payment transactions
+        and security status.
+    </p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SUMMARY CARDS -->
+<!-- ================================================= -->
+
+<div class="cards">
+
+
+    <div class="card">
+
+        <h3>
+            Total Transactions
+        </h3>
+
+        <p id="totalTransactions">
+            0
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            Safe Transactions
+        </h3>
+
+        <p id="safeTransactions">
+            0
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            Suspicious Transactions
+        </h3>
+
+        <p id="suspiciousTransactions">
+            0
+        </p>
+
+    </div>
+
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- ACTIONS -->
+<!-- ================================================= -->
+
+<div class="actions">
+
+
+    <!-- CHECK TRANSACTION -->
+
+    <div class="action">
+
+        <h2>
+            💳 Check Transaction
+        </h2>
+
+        <p>
+            Check whether a payment transaction
+            is safe or suspicious.
+        </p>
+
+        <a href="transaction.html">
+
+            Check Transaction
+
+        </a>
+
+    </div>
+
+
+    <!-- TRANSACTION HISTORY -->
+
+    <div class="action">
+
+        <h2>
+            📜 Transaction History
+        </h2>
+
+        <p>
+            View your recent transaction activity.
+        </p>
+
+        <a href="#history">
+
+            View History
+
+        </a>
+
+    </div>
+
+
+    <!-- FRAUD ALERTS -->
+
+    <div class="action">
+
+        <h2>
+            🚨 Fraud Alerts
+        </h2>
+
+        <p>
+            Monitor suspicious transaction alerts.
+        </p>
+
+        <a href="#fraudAlerts"
+           onclick="showFraudAlerts(); return false;">
+
+            View Alerts
+
+        </a>
+
+    </div>
+
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- FRAUD ALERTS SECTION -->
+<!-- ================================================= -->
+
+<div class="history"
+     id="fraudAlerts">
+
+
+    <h2 class="alert-title">
+
+        🚨 Fraud Alerts
+
+    </h2>
+
+
+    <p>
+
+        Suspicious transactions detected
+        by the fraud detection system.
+
+    </p>
+
+
+    <table>
+
+
+        <thead>
+
+        <tr>
+
+            <th>ID</th>
+
+            <th>Sender</th>
+
+            <th>Receiver</th>
+
+            <th>Amount</th>
+
+            <th>Location</th>
+
+            <th>Status</th>
+
+            <th>Fraud Reason</th>
+
+        </tr>
+
+        </thead>
+
+
+        <tbody id="fraudAlertTableBody">
+
+        </tbody>
+
+
+    </table>
+
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- TRANSACTION HISTORY -->
+<!-- ================================================= -->
+
+<div class="history"
+     id="history">
+
+
+    <h2>
+
+        Recent Transactions
+
+    </h2>
+
+
+    <table>
+
+
+        <thead>
+
+        <tr>
+
+            <th>ID</th>
+
+            <th>Sender</th>
+
+            <th>Receiver</th>
+
+            <th>Amount</th>
+
+            <th>Location</th>
+
+            <th>Status</th>
+
+            <th>Fraud Reason</th>
+
+        </tr>
+
+        </thead>
+
+
+        <tbody id="transactionTableBody">
+
+        </tbody>
+
+
+    </table>
+
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ================================================= -->
+
+<script>
+
+
+/* ================================================= */
+/* USER LOGIN PROTECTION */
+/* ================================================= */
+
+const userRole =
+    sessionStorage.getItem("userRole");
+
+
+if (userRole !== "USER") {
+
+    alert("Please login as a user.");
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* ================================================= */
+/* DISPLAY USER NAME */
+/* ================================================= */
+
+const storedUserName =
+    sessionStorage.getItem("userName");
+
+
+if (storedUserName) {
+
+    document.getElementById("userName")
+        .innerText = storedUserName;
+
+}
+
+
+/* ================================================= */
+/* LOAD ALL TRANSACTIONS */
+/* ================================================= */
+
+function loadTransactions() {
+
+
+    fetch("/api/transactions")
+
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load transactions"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+
+        .then(transactions => {
+
+
+            let safeCount = 0;
+
+            let suspiciousCount = 0;
+
+
+            const tableBody =
+                document.getElementById(
+                    "transactionTableBody"
+                );
+
+
+            tableBody.innerHTML = "";
+
+
+            /* ===================================== */
+            /* NO TRANSACTIONS */
+            /* ===================================== */
+
+            if (transactions.length === 0) {
+
+                tableBody.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="7">
+
+                            No transactions found.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+
+            /* ===================================== */
+            /* DISPLAY TRANSACTIONS */
+            /* ===================================== */
+
+            transactions.forEach(transaction => {
+
+
+                if (
+                    transaction.status === "SAFE"
+                ) {
+
+                    safeCount++;
+
+                }
+
+
+                if (
+                    transaction.status === "SUSPICIOUS"
+                ) {
+
+                    suspiciousCount++;
+
+                }
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                const statusClass =
+                    transaction.status === "SAFE"
+                        ? "safe"
+                        : "suspicious";
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${transaction.id}
+                    </td>
+
+                    <td>
+                        ${transaction.sender}
+                    </td>
+
+                    <td>
+                        ${transaction.receiver}
+                    </td>
+
+                    <td>
+                        ₹${Number(transaction.amount).toLocaleString("en-IN")}
+                    </td>
+
+                    <td>
+                        ${transaction.location || "-"}
+                    </td>
+
+                    <td class="${statusClass}">
+                        ${transaction.status}
+                    </td>
+
+                    <td>
+                        ${
+                            transaction.fraudReason ||
+                            "No fraud detected"
+                        }
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(row);
+
+
+            });
+
+
+            /* ===================================== */
+            /* UPDATE SUMMARY CARDS */
+            /* ===================================== */
+
+            document.getElementById(
+                "totalTransactions"
+            ).innerText =
+                transactions.length;
+
+
+            document.getElementById(
+                "safeTransactions"
+            ).innerText =
+                safeCount;
+
+
+            document.getElementById(
+                "suspiciousTransactions"
+            ).innerText =
+                suspiciousCount;
+
+
+        })
+
+
+        .catch(error => {
+
+            console.error(
+                "Error loading transactions:",
+                error
+            );
+
+        });
+
+}
+
+
+/* ================================================= */
+/* SHOW FRAUD ALERTS */
+/* ================================================= */
+
+function showFraudAlerts() {
+
+
+    const fraudAlertSection =
+        document.getElementById(
+            "fraudAlerts"
+        );
+
+
+    const fraudAlertTableBody =
+        document.getElementById(
+            "fraudAlertTableBody"
+        );
+
+
+    /* ===================================== */
+    /* SHOW ALERT SECTION */
+    /* ===================================== */
+
+    fraudAlertSection.style.display =
+        "block";
+
+
+    /* ===================================== */
+    /* CLEAR OLD DATA */
+    /* ===================================== */
+
+    fraudAlertTableBody.innerHTML = "";
+
+
+    /* ===================================== */
+    /* GET TRANSACTIONS */
+    /* ===================================== */
+
+    fetch("/api/transactions")
+
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load fraud alerts"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+
+        .then(transactions => {
+
+
+            /* ================================= */
+            /* FILTER SUSPICIOUS TRANSACTIONS */
+            /* ================================= */
+
+            const suspiciousTransactions =
+                transactions.filter(
+                    transaction =>
+                        transaction.status ===
+                        "SUSPICIOUS"
+                );
+
+
+            /* ================================= */
+            /* NO FRAUD ALERTS */
+            /* ================================= */
+
+            if (
+                suspiciousTransactions.length === 0
+            ) {
+
+                fraudAlertTableBody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="no-alert"
+                        >
+
+                            ✅ No suspicious
+                            transactions found.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+
+            /* ================================= */
+            /* DISPLAY FRAUD ALERTS */
+            /* ================================= */
+
+            suspiciousTransactions.forEach(
+                transaction => {
+
+
+                    const row =
+                        document.createElement("tr");
+
+
+                    row.innerHTML = `
+
+                        <td>
+                            ${transaction.id}
+                        </td>
+
+                        <td>
+                            ${transaction.sender}
+                        </td>
+
+                        <td>
+                            ${transaction.receiver}
+                        </td>
+
+                        <td>
+                            ₹${Number(transaction.amount).toLocaleString("en-IN")}
+                        </td>
+
+                        <td>
+                            ${transaction.location || "-"}
+                        </td>
+
+                        <td class="suspicious">
+
+                            ${transaction.status}
+
+                        </td>
+
+                        <td>
+
+                            ${
+                                transaction.fraudReason ||
+                                "Suspicious activity detected"
+                            }
+
+                        </td>
+
+                    `;
+
+
+                    fraudAlertTableBody
+                        .appendChild(row);
+
+
+                }
+            );
+
+
+            /* ================================= */
+            /* SCROLL TO ALERT SECTION */
+            /* ================================= */
+
+            fraudAlertSection.scrollIntoView({
+
+                behavior: "smooth",
+
+                block: "start"
+
+            });
+
+
+        })
+
+
+        .catch(error => {
+
+            console.error(
+                "Error loading fraud alerts:",
+                error
+            );
+
+
+            fraudAlertTableBody.innerHTML = `
+
+                <tr>
+
+                    <td colspan="7">
+
+                        Unable to load fraud alerts.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+}
+
+
+/* ================================================= */
+/* LOGOUT */
+/* ================================================= */
+
+function logout() {
+
+    sessionStorage.clear();
+
+}
+
+
+/* ================================================= */
+/* PAGE LOAD */
+/* ================================================= */
+
+window.onload = function() {
+
+    loadTransactions();
+
+};
+
+
+</script>
+
+
+</body>
+
+</html>

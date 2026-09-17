@@ -1,0 +1,567 @@
+<script>
+    window.location.href = "/home.html";
+</script>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>UPI Fraud Detection System</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            width: 500px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1e3a8a;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #162d6b;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Dashboard */
+
+        .dashboard {
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .dashboard h2 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 25px;
+        }
+
+        .dashboard-cards {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: #f4f7fb;
+            border-radius: 10px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        #transactionTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        #transactionTable th,
+        #transactionTable td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        #transactionTable th {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                width: 85%;
+            }
+
+            .dashboard-cards {
+                flex-direction: column;
+            }
+
+            #transactionTable {
+                font-size: 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <div class="header">
+
+        <h1>UPI Fraud Detection System</h1>
+
+        <p>AI-Based Real-Time Transaction Monitoring</p>
+
+    </div>
+
+
+    <!-- Transaction Form -->
+
+    <div class="container">
+
+        <h2>Check Transaction</h2>
+
+        <label>Sender Name</label>
+
+        <input
+            type="text"
+            id="sender"
+            placeholder="Enter sender name"
+        >
+
+
+        <label>Receiver Name</label>
+
+        <input
+            type="text"
+            id="receiver"
+            placeholder="Enter receiver name"
+        >
+
+
+        <label>Amount</label>
+
+        <input
+            type="number"
+            id="amount"
+            placeholder="Enter amount"
+        >
+
+
+        <label>Location</label>
+
+        <input
+            type="text"
+            id="location"
+            placeholder="Enter location"
+        >
+
+
+        <button onclick="checkTransaction()">
+
+            Check Transaction
+
+        </button>
+
+
+        <div id="result"></div>
+
+    </div>
+
+
+    <!-- Dashboard -->
+
+    <div class="dashboard">
+
+        <h2>Transaction Dashboard</h2>
+
+        <div class="dashboard-cards">
+
+
+            <div class="card">
+
+                <h3>Total Transactions</h3>
+
+                <p id="totalTransactions">0</p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Safe Transactions</h3>
+
+                <p id="safeTransactions">0</p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Suspicious Transactions</h3>
+
+                <p id="suspiciousTransactions">0</p>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- Transaction History -->
+
+        <h3>Recent Transactions</h3>
+
+
+        <table id="transactionTable">
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Sender</th>
+
+                    <th>Receiver</th>
+
+                    <th>Amount</th>
+
+                    <th>Location</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="transactionTableBody">
+
+            </tbody>
+
+
+        </table>
+
+    </div>
+
+
+    <!-- JavaScript -->
+
+    <script>
+
+
+        // Check a new transaction
+
+        function checkTransaction() {
+
+
+            let sender =
+                document.getElementById("sender").value;
+
+
+            let receiver =
+                document.getElementById("receiver").value;
+
+
+            let amount =
+                document.getElementById("amount").value;
+
+
+            let location =
+                document.getElementById("location").value;
+
+
+            // Validate input
+
+            if (
+                sender === "" ||
+                receiver === "" ||
+                amount === "" ||
+                location === ""
+            ) {
+
+                document.getElementById("result").innerHTML =
+                    "Please enter all transaction details.";
+
+                return;
+
+            }
+
+
+            // Send transaction to Spring Boot
+
+            fetch("/api/transactions", {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    sender: sender,
+
+                    receiver: receiver,
+
+                    amount: parseFloat(amount),
+
+                    location: location,
+
+
+                })
+
+            })
+
+
+            .then(response => {
+
+                if (!response.ok) {
+
+                    throw new Error("Server error");
+
+                }
+
+                return response.json();
+
+            })
+
+
+            .then(data => {
+     console.log(data);
+  
+                // Display fraud result
+
+                document.getElementById("result").innerHTML =
+    "Transaction Status: " + data.status +
+    "<br>Reason: " + (data.fraudReason || "No fraud detected");
+
+
+                // Clear input fields
+
+                document.getElementById("sender").value = "";
+
+                document.getElementById("receiver").value = "";
+
+                document.getElementById("amount").value = "";
+
+                document.getElementById("location").value = "";
+
+
+                // Refresh dashboard
+
+                loadTransactions();
+
+
+            })
+
+
+            .catch(error => {
+
+                document.getElementById("result").innerHTML =
+                    "Error connecting to server.";
+
+                console.error(error);
+
+            });
+
+        }
+
+
+        // Load transactions from database
+
+        function loadTransactions() {
+
+
+            fetch("/api/transactions")
+
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error("Failed to load transactions");
+
+                    }
+
+                    return response.json();
+
+                })
+
+
+                .then(transactions => {
+
+
+                    // Get table body
+
+                    let tableBody =
+                        document.getElementById(
+                            "transactionTableBody"
+                        );
+
+
+                    // Clear old rows
+
+                    tableBody.innerHTML = "";
+
+
+                    // Counters
+
+                    let safeCount = 0;
+
+                    let suspiciousCount = 0;
+
+
+                    // Display every transaction
+
+                    transactions.forEach(transaction => {
+
+
+                        if (transaction.status === "SAFE") {
+
+                            safeCount++;
+
+                        }
+
+
+                        if (transaction.status === "SUSPICIOUS") {
+
+                            suspiciousCount++;
+
+                        }
+
+
+                        // Create table row
+
+                        let row =
+                            document.createElement("tr");
+
+
+                        row.innerHTML = `
+
+                            <td>${transaction.id}</td>
+
+                            <td>${transaction.sender}</td>
+
+                            <td>${transaction.receiver}</td>
+
+                            <td>₹${transaction.amount}</td>
+
+                            <td>${transaction.location}</td>
+
+                            <td>${transaction.status}</td>
+
+                        `;
+
+
+                        tableBody.appendChild(row);
+
+                    });
+
+
+                    // Update dashboard cards
+
+                    document.getElementById(
+                        "totalTransactions"
+                    ).innerText = transactions.length;
+
+
+                    document.getElementById(
+                        "safeTransactions"
+                    ).innerText = safeCount;
+
+
+                    document.getElementById(
+                        "suspiciousTransactions"
+                    ).innerText = suspiciousCount;
+
+
+                })
+
+
+                .catch(error => {
+
+                    console.error(
+                        "Error loading transactions:",
+                        error
+                    );
+
+                });
+
+        }
+
+
+        // Load transactions when page opens
+
+        window.onload = function() {
+
+            loadTransactions();
+
+        };
+
+
+    </script>
+
+</body>
+
+</html>
