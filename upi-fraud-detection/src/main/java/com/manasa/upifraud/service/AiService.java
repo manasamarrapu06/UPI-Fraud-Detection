@@ -21,8 +21,8 @@ public class AiService {
             UserRepository userRepository) {
 
         this.restClient = RestClient.builder()
-                .baseUrl("http://127.0.0.1:5000")
-                .build();
+        .baseUrl("https://upi-fraud-detection-js85.vercel.app")
+        .build();
 
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
