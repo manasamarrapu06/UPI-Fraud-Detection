@@ -74,7 +74,7 @@ def predict():
         elif risk_score >= 40:
             risk_level = "MEDIUM"
         else:
-            risk_level = "LOW"upi-fraud-background.png
+           risk_level = "LOW"
 
         # Determine result
         if prediction == 1:
