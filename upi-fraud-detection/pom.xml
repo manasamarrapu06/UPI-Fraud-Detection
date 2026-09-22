@@ -24,7 +24,7 @@
 
     <!-- Java Version -->
     <properties>
-        <java.version>25</java.version>
+        <java.version>17</java.version>
     </properties>
 
     <!-- Dependencies -->
