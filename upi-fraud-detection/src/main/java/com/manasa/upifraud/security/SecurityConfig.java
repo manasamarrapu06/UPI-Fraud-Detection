@@ -1,15 +1,26 @@
 package com.manasa.upifraud.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
+
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 
@@ -18,28 +29,46 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(
-            UserDetailsService userDetailsService) {
-
+    public SecurityConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
+
+    // ==================================================
+    // PASSWORD ENCODER
+    // Supports both BCrypt and existing {noop} passwords
+    // ==================================================
 
     @Bean
     public PasswordEncoder passwordEncoder() {
 
-        // Supports BCrypt for new passwords
-        // and {noop} temporarily for existing users.
-        return PasswordEncoderFactories
-                .createDelegatingPasswordEncoder();
+        Map<String, PasswordEncoder> encoders =
+                new HashMap<>();
+
+        encoders.put(
+                "bcrypt",
+                new BCryptPasswordEncoder()
+        );
+
+        encoders.put(
+                "noop",
+                NoOpPasswordEncoder.getInstance()
+        );
+
+        return new DelegatingPasswordEncoder(
+                "bcrypt",
+                encoders
+        );
     }
+
+    // ==================================================
+    // AUTHENTICATION PROVIDER
+    // ==================================================
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
 
         DaoAuthenticationProvider provider =
-                new DaoAuthenticationProvider(
-                        userDetailsService
-                );
+                new DaoAuthenticationProvider(userDetailsService);
 
         provider.setPasswordEncoder(
                 passwordEncoder()
@@ -47,6 +76,10 @@ public class SecurityConfig {
 
         return provider;
     }
+
+    // ==================================================
+    // AUTHENTICATION MANAGER
+    // ==================================================
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -56,11 +89,19 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    // ==================================================
+    // SECURITY CONTEXT
+    // ==================================================
+
     @Bean
     public SecurityContextRepository securityContextRepository() {
 
         return new HttpSessionSecurityContextRepository();
     }
+
+    // ==================================================
+    // SECURITY FILTER CHAIN
+    // ==================================================
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -69,55 +110,87 @@ public class SecurityConfig {
             throws Exception {
 
         http
+
+            // Disable CSRF for this project
             .csrf(csrf -> csrf.disable())
 
+            // Store login in HTTP session
             .securityContext(securityContext ->
                 securityContext
                     .securityContextRepository(
-                            securityContextRepository
+                        securityContextRepository
                     )
             )
 
+            // Authentication provider
             .authenticationProvider(
-                    authenticationProvider()
+                authenticationProvider()
             )
 
+            // Authorization rules
             .authorizeHttpRequests(auth -> auth
 
-                // Public pages
+                // ------------------------------------------
+                // PUBLIC PAGES
+                // ------------------------------------------
+
                 .requestMatchers(
-                        "/",
-                        "/index.html",
-                        "/home.html",
-                        "/login.html",
-                        "/register.html",
-                        "/css/**",
-                        "/js/**",
-                        "/images/**"
+                    "/",
+                    "/index.html",
+                    "/home.html",
+                    "/login.html",
+                    "/register.html",
+                    "/transaction.html"
                 ).permitAll()
 
-                // Public authentication APIs
+                // ------------------------------------------
+                // STATIC RESOURCES
+                // ------------------------------------------
+
                 .requestMatchers(
-                        "/api/auth/login",
-                        "/api/auth/register"
+                    "/css/**",
+                    "/js/**",
+                    "/images/**"
                 ).permitAll()
 
-                // Transactions require login
+                // ------------------------------------------
+                // AUTHENTICATION APIs
+                // ------------------------------------------
+
                 .requestMatchers(
-                        "/api/transactions/**"
+                    "/api/auth/login",
+                    "/api/auth/register"
+                ).permitAll()
+
+                // ------------------------------------------
+                // TRANSACTION APIs
+                // USER + ADMIN
+                // ------------------------------------------
+
+                .requestMatchers(
+                    "/api/transactions/**"
                 ).hasAnyRole("USER", "ADMIN")
 
-                // Admin dashboard
-                .requestMatchers(
-                        "/admin-dashboard.html"
-                ).hasRole("ADMIN")
+                // ------------------------------------------
+                // USER DASHBOARD
+                // ------------------------------------------
 
-                // User dashboard
                 .requestMatchers(
-                        "/user-dashboard.html"
+                    "/user-dashboard.html"
                 ).hasRole("USER")
 
-                // Everything else requires authentication
+                // ------------------------------------------
+                // ADMIN DASHBOARD
+                // ------------------------------------------
+
+                .requestMatchers(
+                    "/admin-dashboard.html"
+                ).hasRole("ADMIN")
+
+                // ------------------------------------------
+                // EVERYTHING ELSE
+                // ------------------------------------------
+
                 .anyRequest().authenticated()
             );
 
